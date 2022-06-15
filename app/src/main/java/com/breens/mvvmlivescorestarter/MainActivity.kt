@@ -3,13 +3,17 @@ package com.breens.mvvmlivescorestarter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.breens.mvvmlivescorestarter.ui.theme.MVVMLiveScoreStarterTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,12 +21,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MVVMLiveScoreStarterTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
+                Column(modifier = Modifier.padding(10.dp)) {
+                    TopAppBar()
                 }
             }
         }
@@ -30,14 +30,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+fun TopAppBar() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh Icon")
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MVVMLiveScoreStarterTheme {
-        Greeting("Android")
+        Text(text = "LiveScores", style = MaterialTheme.typography.h4)
+
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.modeicon), contentDescription = "Toggle Theme")
+        }
     }
 }

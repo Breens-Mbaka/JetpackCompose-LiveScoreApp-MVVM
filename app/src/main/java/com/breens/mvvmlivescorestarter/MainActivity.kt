@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
@@ -12,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.breens.mvvmlivescorestarter.ui.theme.MVVMLiveScoreStarterTheme
 
@@ -43,7 +45,10 @@ fun TopAppBar() {
         Text(text = "LiveScores", style = MaterialTheme.typography.h4)
 
         IconButton(onClick = { /*TODO*/ }) {
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.modeicon), contentDescription = "Toggle Theme")
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.modeicon),
+                contentDescription = "Toggle Theme"
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.breens.mvvmlivescorestarter.ui
+package com.breens.mvvmlivescorestarter
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

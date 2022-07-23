@@ -2,7 +2,7 @@
 An Android App that fetches live and upcoming matches from the ElenaSport API
 
 ## Prerequisite Before Running This App
-Please sign up to [Elena API](https://elenasport.io/) and create an access token then navigate to `Constants.kt` and put
+Please sign up to [Elena API](https://elenasport.io/) and create an access token then navigate to `util/Constants.kt` and put
 it in the variable;
 ``
 const val ACCESS_TOKEN = "Bearer [PUT ACCESS TOKEN HERE]"

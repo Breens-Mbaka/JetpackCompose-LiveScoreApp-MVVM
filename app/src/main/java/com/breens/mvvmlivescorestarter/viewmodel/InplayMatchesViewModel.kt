@@ -33,10 +33,10 @@ class InplayMatchesViewModel @Inject constructor(private val inPlayMatchesReposi
                 _inPlayMatchesState.value = MatchesState.Success(inplayMatchesResponse)
             }
             catch (exception: HttpException) {
-                _inPlayMatchesState.value = MatchesState.Error("No internet connection")
+                _inPlayMatchesState.value = MatchesState.Error("Something went wrong")
             }
             catch (exception: IOException) {
-                _inPlayMatchesState.value = MatchesState.Error("Something went wrong")
+                _inPlayMatchesState.value = MatchesState.Error("No internet connection")
             }
         }
     }

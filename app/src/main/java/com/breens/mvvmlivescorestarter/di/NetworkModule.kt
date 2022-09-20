@@ -1,8 +1,7 @@
 package com.breens.mvvmlivescorestarter.di
 
-import com.breens.mvvmlivescorestarter.data.remote.ElenaApiService
+import com.breens.mvvmlivescorestarter.data.remote.SportsDataApiService
 import com.breens.mvvmlivescorestarter.util.BASE_URL
-import com.breens.mvvmlivescorestarter.util.RequestInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +20,6 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .addInterceptor(RequestInterceptor())
             .build()
     }
 
@@ -35,7 +33,7 @@ object NetworkModule {
     }
 
     @Provides
-    fun elenaApiService(retrofit: Retrofit): ElenaApiService {
-        return retrofit.create(ElenaApiService::class.java)
+    fun elenaApiService(retrofit: Retrofit): SportsDataApiService {
+        return retrofit.create(SportsDataApiService::class.java)
     }
 }

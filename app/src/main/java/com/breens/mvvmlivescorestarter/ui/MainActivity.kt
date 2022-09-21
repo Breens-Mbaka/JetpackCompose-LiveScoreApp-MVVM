@@ -1,58 +1,31 @@
 package com.breens.mvvmlivescorestarter.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Chip
-import androidx.compose.material.ChipDefaults
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.IconToggleButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.breens.mvvmlivescorestarter.R
 import com.breens.mvvmlivescorestarter.data.remote.models.Data
 import com.breens.mvvmlivescorestarter.ui.theme.Green900
 import com.breens.mvvmlivescorestarter.ui.theme.MVVMLiveScoreStarterTheme
@@ -61,7 +34,7 @@ import com.breens.mvvmlivescorestarter.viewmodel.MatchesViewModel
 import com.breens.mvvmlivescorestarter.viewmodel.state.MatchesState
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -94,12 +67,12 @@ fun TopAppBar(matchesViewModel: MatchesViewModel = viewModel()) {
 
         Text(text = "LiveScores", style = MaterialTheme.typography.h4)
 
-        val (isChecked, setChecked) = remember { mutableStateOf(false) }
-
-        FavoriteButton(
-            isChecked = isChecked,
-            onClick = { setChecked(!isChecked) }
-        )
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.modeicon),
+                contentDescription = "Toggle Theme"
+            )
+        }
     }
 }
 
@@ -357,48 +330,4 @@ fun getMatchTime(date: String): String? {
     val parser = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
     val formatter = SimpleDateFormat("hh:mm a", Locale.ENGLISH)//06:30 pm
     return date.let { it -> parser.parse(it)?.let { formatter.format(it) } }
-}
-
-@SuppressLint("UnusedTransitionTargetStateParameter")
-@Composable
-fun FavoriteButton(
-    isChecked: Boolean,
-    onClick: () -> Unit
-) {
-    IconToggleButton(
-        checked = isChecked,
-        onCheckedChange = { onClick() }
-    ) {
-        val transition = updateTransition(isChecked, label = "Checked indicator")
-
-        val tint by transition.animateColor(
-            label = "Tint"
-        ) { isChecked ->
-            if (isChecked) Color.White else Color.Black
-        }
-
-        val size by transition.animateDp(
-            transitionSpec = {
-                if (false isTransitioningTo true) {
-                    keyframes {
-                        durationMillis = 250
-                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms
-                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms
-                        40.dp at 75 // ms
-                        35.dp at 150 // ms
-                    }
-                } else {
-                    spring(stiffness = Spring.StiffnessVeryLow)
-                }
-            },
-            label = "Size"
-        ) { 30.dp }
-
-        Icon(
-            imageVector = if (isChecked) Icons.Filled.ModeNight else Icons.Filled.LightMode,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(size)
-        )
-    }
 }

@@ -4,6 +4,6 @@ const val BASE_URL = "https://app.sportdataapi.com/api/v1/"
 
 const val GET_MATCHES_ENDPOINT = "soccer/matches"
 
-const val API_KEY = "33f533f0-0729-11ec-83f8-6557369cf734"
+const val API_KEY = "PUT YOUR API KEY HERE"
 
-const val SEASON_ID = 3161
+const val SEASON_ID = 3161 // replace this with your preferred season id

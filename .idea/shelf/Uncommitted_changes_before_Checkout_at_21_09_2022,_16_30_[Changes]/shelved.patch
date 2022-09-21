@@ -1,0 +1,130 @@
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"CompilerConfiguration\">\n    <bytecodeTargetLevel target=\"17\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	
++++ b/.idea/compiler.xml	
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="CompilerConfiguration">
+-    <bytecodeTargetLevel target="17" />
++    <bytecodeTargetLevel target="18" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: app/src/main/java/com/breens/mvvmlivescorestarter/ui/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.breens.mvvmlivescorestarter.ui\n\nimport android.annotation.SuppressLint\nimport android.os.Bundle\nimport androidx.activity.ComponentActivity\nimport androidx.activity.compose.setContent\nimport androidx.compose.animation.animateColor\nimport androidx.compose.animation.core.FastOutLinearInEasing\nimport androidx.compose.animation.core.LinearOutSlowInEasing\nimport androidx.compose.animation.core.Spring\nimport androidx.compose.animation.core.animateDp\nimport androidx.compose.animation.core.keyframes\nimport androidx.compose.animation.core.spring\nimport androidx.compose.animation.core.updateTransition\nimport androidx.compose.foundation.Image\nimport androidx.compose.foundation.isSystemInDarkTheme\nimport androidx.compose.foundation.layout.Arrangement\nimport androidx.compose.foundation.layout.Column\nimport androidx.compose.foundation.layout.Row\nimport androidx.compose.foundation.layout.fillMaxWidth\nimport androidx.compose.foundation.layout.height\nimport androidx.compose.foundation.layout.padding\nimport androidx.compose.foundation.layout.size\nimport androidx.compose.foundation.layout.width\nimport androidx.compose.foundation.lazy.LazyColumn\nimport androidx.compose.foundation.lazy.LazyRow\nimport androidx.compose.foundation.shape.RoundedCornerShape\nimport androidx.compose.material.Card\nimport androidx.compose.material.Chip\nimport androidx.compose.material.ChipDefaults\nimport androidx.compose.material.ExperimentalMaterialApi\nimport androidx.compose.material.Icon\nimport androidx.compose.material.IconButton\nimport androidx.compose.material.IconToggleButton\nimport androidx.compose.material.MaterialTheme\nimport androidx.compose.material.Text\nimport androidx.compose.material.icons.Icons\nimport androidx.compose.material.icons.filled.Info\nimport androidx.compose.material.icons.filled.LightMode\nimport androidx.compose.material.icons.filled.ModeNight\nimport androidx.compose.material.icons.filled.Refresh\nimport androidx.compose.runtime.Composable\nimport androidx.compose.runtime.getValue\nimport androidx.compose.runtime.mutableStateOf\nimport androidx.compose.runtime.remember\nimport androidx.compose.ui.Alignment\nimport androidx.compose.ui.Modifier\nimport androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.graphics.asImageBitmap\nimport androidx.compose.ui.layout.ContentScale\nimport androidx.compose.ui.text.style.TextAlign\nimport androidx.compose.ui.unit.dp\nimport androidx.lifecycle.compose.ExperimentalLifecycleComposeApi\nimport androidx.lifecycle.compose.collectAsStateWithLifecycle\nimport androidx.lifecycle.viewmodel.compose.viewModel\nimport com.breens.mvvmlivescorestarter.data.remote.models.Data\nimport com.breens.mvvmlivescorestarter.ui.theme.Green900\nimport com.breens.mvvmlivescorestarter.ui.theme.MVVMLiveScoreStarterTheme\nimport com.breens.mvvmlivescorestarter.ui.util.imageLoader\nimport com.breens.mvvmlivescorestarter.viewmodel.MatchesViewModel\nimport com.breens.mvvmlivescorestarter.viewmodel.state.MatchesState\nimport dagger.hilt.android.AndroidEntryPoint\nimport java.text.SimpleDateFormat\nimport java.util.Locale\n\n@AndroidEntryPoint\nclass MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContent {\n            MVVMLiveScoreStarterTheme {\n                Column(modifier = Modifier.padding(10.dp)) {\n                    TopAppBar()\n                    FetchData()\n                }\n            }\n        }\n    }\n}\n\n@Composable\nfun TopAppBar(matchesViewModel: MatchesViewModel = viewModel()) {\n    Row(\n        modifier = Modifier.fillMaxWidth(),\n        horizontalArrangement = Arrangement.SpaceBetween,\n        verticalAlignment = Alignment.CenterVertically\n    ) {\n        IconButton(onClick = {\n            matchesViewModel.getAllInPlayMatches()\n            matchesViewModel.getUpcomingMatches()\n        }) {\n            Icon(imageVector = Icons.Default.Refresh, contentDescription = \"Refresh Icon\")\n        }\n\n        Text(text = \"LiveScores\", style = MaterialTheme.typography.h4)\n\n        val (isChecked, setChecked) = remember { mutableStateOf(false) }\n\n        FavoriteButton(\n            isChecked = isChecked,\n            onClick = { setChecked(!isChecked) }\n        )\n    }\n}\n\n@OptIn(ExperimentalLifecycleComposeApi::class)\n@Composable\nfun FetchData(\n    matchesViewModel: MatchesViewModel = viewModel()\n) {\n\n    val upcomingMatchesState = matchesViewModel.upcomingMatchesState.collectAsStateWithLifecycle()\n\n    val inplayMatchesState = matchesViewModel.inPlayMatchesState.collectAsStateWithLifecycle()\n\n    Column {\n        when (val state = inplayMatchesState.value) {\n            is MatchesState.Empty -> Text(text = \"No data available\")\n            is MatchesState.Loading -> Text(text = \"Loading...\")\n            is MatchesState.Success -> LiveMatches(liveMatches = state.data)\n            is MatchesState.Error -> Text(text = state.message)\n        }\n        when (val state = upcomingMatchesState.value) {\n\n            is MatchesState.Empty -> Text(text = \"No data available\")\n            is MatchesState.Loading -> Text(text = \"Loading...\")\n            is MatchesState.Success -> UpcomingMatches(upcomingMatches = state.data)\n            is MatchesState.Error -> Text(text = state.message)\n        }\n    }\n}\n\n@Composable\nfun LiveMatches(liveMatches: List<Data>) {\n\n    Column(modifier = Modifier.padding(15.dp)) {\n        Text(\n            text = \"Live Matches\",\n            style = MaterialTheme.typography.h3,\n            modifier = Modifier.padding(top = 12.dp)\n        )\n\n        if (liveMatches.isEmpty()) {\n            Column(horizontalAlignment = Alignment.CenterHorizontally) {\n                Icon(\n                    imageVector = Icons.Default.Info,\n                    contentDescription = \"No Live Matches Currently\"\n                )\n                Text(\n                    text = \"No Live Matches Currently\",\n                    style = MaterialTheme.typography.h6\n                )\n            }\n        } else {\n\n            LazyRow(\n                modifier = Modifier.padding(top = 15.dp),\n                horizontalArrangement = Arrangement.spacedBy(12.dp)\n            ) {\n                items(liveMatches.size) {\n                    LiveMatchItem(match = liveMatches[it])\n                }\n            }\n        }\n    }\n}\n\n@OptIn(ExperimentalMaterialApi::class)\n@Composable\nfun LiveMatchItem(match: Data) {\n\n    Card(\n        shape = RoundedCornerShape(24.dp),\n        modifier = Modifier\n            .width(300.dp)\n            .height(150.dp),\n        elevation = 0.dp\n    ) {\n        Column(modifier = Modifier.padding(10.dp)) {\n            Text(\n                text = match.group.group_name,\n                modifier = Modifier.align(Alignment.CenterHorizontally),\n                style = MaterialTheme.typography.h5\n            )\n\n            Row(\n                modifier = Modifier\n                    .fillMaxWidth()\n                    .padding(20.dp),\n                horizontalArrangement = Arrangement.SpaceAround,\n                verticalAlignment = Alignment.CenterVertically\n            ) {\n                val homeScore = match.stats.home_score\n                val awayScore = match.stats.away_score\n\n                Text(\n                    text = match.home_team.common_name,\n                    style = MaterialTheme.typography.h6\n                )\n                Text(\n                    text = \"$homeScore:$awayScore\",\n                    style = MaterialTheme.typography.h5\n                )\n                Text(\n                    text = match.away_team.common_name,\n                    style = MaterialTheme.typography.h6\n                )\n            }\n            Chip(\n                onClick = { /*TODO*/ },\n                colors = ChipDefaults.chipColors(\n                    contentColor = Color.White,\n                    backgroundColor = Green900\n                ),\n                modifier = Modifier\n                    .align(\n                        Alignment.CenterHorizontally\n                    )\n                    .padding(top = 20.dp)\n            ) {\n                Text(matchStatus(match))\n            }\n        }\n    }\n}\n\nfun matchStatus(match: Data): String {\n    return when (match.status_code) {\n        1 -> \"${match.minute} '\"\n        11 -> \"half time\"\n        0 -> \"not started\"\n        3 -> \"finished\"\n        5 -> \"cancelled\"\n        4 -> \"postponed\"\n        17 -> \"to be announced\"\n        12 -> \"extra time\"\n        13 -> \"penalties\"\n        else -> \"-\"\n    }\n}\n\n@Composable\nfun UpcomingMatches(upcomingMatches: List<Data>) {\n\n    Column(modifier = Modifier.padding(15.dp)) {\n\n        Text(\n            text = \"Scheduled Matches\",\n            style = MaterialTheme.typography.h3,\n            modifier = Modifier.padding(top = 12.dp)\n        )\n\n        val notStartedUpcomingMatches =\n            upcomingMatches.filter { it.status_code == 1 || it.status_code == 17 }\n        if (notStartedUpcomingMatches.isEmpty()) {\n            Column(horizontalAlignment = Alignment.CenterHorizontally) {\n                Icon(\n                    imageVector = Icons.Default.Info,\n                    contentDescription = \"No Upcoming Matches Currently\"\n                )\n                Text(\n                    text = \"No Upcoming Matches Currently\",\n                    style = MaterialTheme.typography.h6\n                )\n            }\n        } else {\n            LazyColumn(\n                modifier = Modifier.padding(top = 15.dp),\n                horizontalAlignment = Alignment.CenterHorizontally\n            ) {\n                items(upcomingMatches.size) {\n                    UpcomingMatchItem(match = notStartedUpcomingMatches[it])\n                }\n            }\n        }\n    }\n}\n\n@Composable\nfun UpcomingMatchItem(match: Data) {\n    Card(\n        shape = RoundedCornerShape(24.dp),\n        modifier = Modifier\n            .fillMaxWidth()\n            .height(150.dp)\n            .padding(bottom = 10.dp),\n        elevation = 0.dp\n    ) {\n        val homeTeamLogo = imageLoader(url = match.home_team.logo).value\n        val awayTeamLogo = imageLoader(url = match.away_team.logo).value\n        val month = getMatchDayAndMonth(match.match_start)\n        val time = getMatchTime(match.match_start)\n\n        Row(\n            modifier = Modifier.fillMaxWidth(),\n            verticalAlignment = Alignment.CenterVertically,\n            horizontalArrangement = Arrangement.Center\n        ) {\n            Column(\n                modifier = Modifier.weight(0.5f),\n                verticalArrangement = Arrangement.spacedBy(5.dp),\n                horizontalAlignment = Alignment.CenterHorizontally\n            ) {\n                homeTeamLogo?.let {\n                    Image(\n                        modifier = Modifier.size(30.dp),\n                        bitmap = homeTeamLogo.asImageBitmap(),\n                        contentDescription = \"Home Team Logo\",\n                        contentScale = ContentScale.Crop\n                    )\n                }\n                Text(\n                    text = match.home_team.name,\n                    style = MaterialTheme.typography.h6,\n                    textAlign = TextAlign.Center\n                )\n            }\n\n            Text(\n                modifier = Modifier.weight(0.5f),\n                text = \"$time\\n$month\",\n                style = MaterialTheme.typography.h6,\n                color = Green900,\n                textAlign = TextAlign.Center\n            )\n\n            Column(\n                modifier = Modifier.weight(0.5f),\n                verticalArrangement = Arrangement.spacedBy(5.dp),\n                horizontalAlignment = Alignment.CenterHorizontally\n            ) {\n                awayTeamLogo?.let {\n                    Image(\n                        modifier = Modifier.size(30.dp),\n                        bitmap = awayTeamLogo.asImageBitmap(),\n                        contentDescription = \"Away Team Logo\",\n                        contentScale = ContentScale.Crop\n                    )\n                }\n                Text(\n                    text = match.away_team.name,\n                    style = MaterialTheme.typography.h6,\n                    textAlign = TextAlign.Center\n                )\n            }\n        }\n    }\n}\n\nfun getMatchDayAndMonth(date: String): String? {\n    val parser = SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\", Locale.ENGLISH)\n    val formatter = SimpleDateFormat(\"d MMM\", Locale.ENGLISH)\n    return date.let { it -> parser.parse(it)?.let { formatter.format(it) } }\n}\n\nfun getMatchTime(date: String): String? {\n    val parser = SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\", Locale.ENGLISH)\n    val formatter = SimpleDateFormat(\"hh:mm a\", Locale.ENGLISH)//06:30 pm\n    return date.let { it -> parser.parse(it)?.let { formatter.format(it) } }\n}\n\n@SuppressLint(\"UnusedTransitionTargetStateParameter\")\n@Composable\nfun FavoriteButton(\n    isChecked: Boolean,\n    onClick: () -> Unit\n) {\n    IconToggleButton(\n        checked = isChecked,\n        onCheckedChange = { onClick() }\n    ) {\n        val transition = updateTransition(isChecked, label = \"Checked indicator\")\n\n        val tint by transition.animateColor(\n            label = \"Tint\"\n        ) { isChecked ->\n            if (isChecked) Color.White else Color.Black\n        }\n\n        val size by transition.animateDp(\n            transitionSpec = {\n                if (false isTransitioningTo true) {\n                    keyframes {\n                        durationMillis = 250\n                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms\n                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms\n                        40.dp at 75 // ms\n                        35.dp at 150 // ms\n                    }\n                } else {\n                    spring(stiffness = Spring.StiffnessVeryLow)\n                }\n            },\n            label = \"Size\"\n        ) { 30.dp }\n\n        Icon(\n            imageVector = if (isChecked) Icons.Filled.ModeNight else Icons.Filled.LightMode,\n            contentDescription = null,\n            tint = tint,\n            modifier = Modifier.size(size)\n        )\n    }\n}
+===================================================================
+diff --git a/app/src/main/java/com/breens/mvvmlivescorestarter/ui/MainActivity.kt b/app/src/main/java/com/breens/mvvmlivescorestarter/ui/MainActivity.kt
+--- a/app/src/main/java/com/breens/mvvmlivescorestarter/ui/MainActivity.kt	
++++ b/app/src/main/java/com/breens/mvvmlivescorestarter/ui/MainActivity.kt	
+@@ -4,6 +4,7 @@
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
++import androidx.activity.viewModels
+ import androidx.compose.animation.animateColor
+ import androidx.compose.animation.core.FastOutLinearInEasing
+ import androidx.compose.animation.core.LinearOutSlowInEasing
+@@ -13,7 +14,6 @@
+ import androidx.compose.animation.core.spring
+ import androidx.compose.animation.core.updateTransition
+ import androidx.compose.foundation.Image
+-import androidx.compose.foundation.isSystemInDarkTheme
+ import androidx.compose.foundation.layout.Arrangement
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+@@ -33,6 +33,7 @@
+ import androidx.compose.material.IconButton
+ import androidx.compose.material.IconToggleButton
+ import androidx.compose.material.MaterialTheme
++import androidx.compose.material.Surface
+ import androidx.compose.material.Text
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.Info
+@@ -61,10 +62,11 @@
+ import com.breens.mvvmlivescorestarter.viewmodel.state.MatchesState
+ import dagger.hilt.android.AndroidEntryPoint
+ import java.text.SimpleDateFormat
+-import java.util.Locale
++import java.util.*
+ 
+ @AndroidEntryPoint
+ class MainActivity : ComponentActivity() {
++
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+         setContent {
+@@ -98,7 +100,14 @@
+ 
+         FavoriteButton(
+             isChecked = isChecked,
+-            onClick = { setChecked(!isChecked) }
++            onClick = {
++                setChecked(!isChecked)
++                if (isChecked) {
++                    matchesViewModel.changeTheme(true)
++                } else {
++                    matchesViewModel.changeTheme(false)
++                }
++            }
+         )
+     }
+ }
+@@ -357,48 +366,4 @@
+     val parser = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+     val formatter = SimpleDateFormat("hh:mm a", Locale.ENGLISH)//06:30 pm
+     return date.let { it -> parser.parse(it)?.let { formatter.format(it) } }
+-}
+-
+-@SuppressLint("UnusedTransitionTargetStateParameter")
+-@Composable
+-fun FavoriteButton(
+-    isChecked: Boolean,
+-    onClick: () -> Unit
+-) {
+-    IconToggleButton(
+-        checked = isChecked,
+-        onCheckedChange = { onClick() }
+-    ) {
+-        val transition = updateTransition(isChecked, label = "Checked indicator")
+-
+-        val tint by transition.animateColor(
+-            label = "Tint"
+-        ) { isChecked ->
+-            if (isChecked) Color.White else Color.Black
+-        }
+-
+-        val size by transition.animateDp(
+-            transitionSpec = {
+-                if (false isTransitioningTo true) {
+-                    keyframes {
+-                        durationMillis = 250
+-                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms
+-                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms
+-                        40.dp at 75 // ms
+-                        35.dp at 150 // ms
+-                    }
+-                } else {
+-                    spring(stiffness = Spring.StiffnessVeryLow)
+-                }
+-            },
+-            label = "Size"
+-        ) { 30.dp }
+-
+-        Icon(
+-            imageVector = if (isChecked) Icons.Filled.ModeNight else Icons.Filled.LightMode,
+-            contentDescription = null,
+-            tint = tint,
+-            modifier = Modifier.size(size)
+-        )
+-    }
+ }
+\ No newline at end of file

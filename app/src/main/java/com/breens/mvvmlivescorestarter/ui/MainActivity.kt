@@ -51,31 +51,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun TopAppBar(matchesViewModel: MatchesViewModel = viewModel()) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = {
-            matchesViewModel.getAllInPlayMatches()
-            matchesViewModel.getUpcomingMatches()
-        }) {
-            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh Icon")
-        }
-
-        Text(text = "LiveScores", style = MaterialTheme.typography.h4)
-
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.modeicon),
-                contentDescription = "Toggle Theme"
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun FetchData(
@@ -316,6 +291,31 @@ fun UpcomingMatchItem(match: Data) {
                     textAlign = TextAlign.Center
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun TopAppBar(matchesViewModel: MatchesViewModel = viewModel()) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = {
+            matchesViewModel.getAllInPlayMatches()
+            matchesViewModel.getUpcomingMatches()
+        }) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh Icon")
+        }
+
+        Text(text = "LiveScores", style = MaterialTheme.typography.h4)
+
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.modeicon),
+                contentDescription = "Toggle Theme"
+            )
         }
     }
 }

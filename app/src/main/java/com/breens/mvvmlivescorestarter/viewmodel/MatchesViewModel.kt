@@ -32,9 +32,6 @@ class MatchesViewModel @Inject constructor(private val matchesRepository: Matche
         started = SharingStarted.WhileSubscribed(5000)
     )
 
-    private var _isDarkTheme = MutableStateFlow(false)
-    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
-
     init {
         getAllInPlayMatches()
         getUpcomingMatches()
@@ -72,9 +69,5 @@ class MatchesViewModel @Inject constructor(private val matchesRepository: Matche
                 _upcomingMatchesState.value = MatchesState.Error("No internet connection")
             }
         }
-    }
-
-    fun changeTheme(value: Boolean) {
-        _isDarkTheme.value = value
     }
 }

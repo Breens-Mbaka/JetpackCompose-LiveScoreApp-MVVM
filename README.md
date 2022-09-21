@@ -1,5 +1,7 @@
-# NOTE ✋🚦
-Elena API is closing soon so I resorted to using the SportsData API, the main branch contains the Elena API integration and the fix/sport-data-api branch contains the new API integration
+# NOTE ✋🚦[READ CAREFULLY!!]
+If you coming from the tutorial its sad to say Elena API will be closing its operation on the 1st October. But good news 😊 the API integration will remain the same, just a change of the live-scores API.
+
+The `main branch` contains the `Elena API` integration and the `fix/sport-data-api` branch contains the new `SportsData API` integration which has a free tier also
 
 ## LiveScoreApp
 An Android App that fetches live and upcoming matches that used to fetch data from ElenaSport API but now SportsData API

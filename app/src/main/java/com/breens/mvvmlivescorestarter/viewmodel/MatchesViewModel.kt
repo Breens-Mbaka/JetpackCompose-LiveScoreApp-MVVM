@@ -19,7 +19,11 @@ import javax.inject.Inject
 class MatchesViewModel @Inject constructor(private val matchesRepository: MatchesRepository): ViewModel() {
 
     private var _inPlayMatchesState = MutableStateFlow<MatchesState>(MatchesState.Empty)
-    val inPlayMatchesState: StateFlow<MatchesState> =  _inPlayMatchesState
+    val inPlayMatchesState: StateFlow<MatchesState> =  _inPlayMatchesState.stateIn(
+        initialValue = MatchesState.Empty,
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
     private var _upcomingMatchesState = MutableStateFlow<MatchesState>(MatchesState.Empty)
     val upcomingMatchesState: StateFlow<MatchesState> = _upcomingMatchesState.stateIn(
@@ -28,12 +32,15 @@ class MatchesViewModel @Inject constructor(private val matchesRepository: Matche
         started = SharingStarted.WhileSubscribed(5000)
     )
 
+    private var _isDarkTheme = MutableStateFlow(false)
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
+
     init {
         getAllInPlayMatches()
         getUpcomingMatches()
     }
 
-    private fun getAllInPlayMatches() {
+    fun getAllInPlayMatches() {
         _inPlayMatchesState.value = MatchesState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,7 +58,7 @@ class MatchesViewModel @Inject constructor(private val matchesRepository: Matche
         }
     }
 
-    private fun getUpcomingMatches() {
+    fun getUpcomingMatches() {
         _upcomingMatchesState.value = MatchesState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -65,5 +72,9 @@ class MatchesViewModel @Inject constructor(private val matchesRepository: Matche
                 _upcomingMatchesState.value = MatchesState.Error("No internet connection")
             }
         }
+    }
+
+    fun changeTheme(value: Boolean) {
+        _isDarkTheme.value = value
     }
 }

@@ -1,8 +1,19 @@
 package com.breens.mvvmlivescorestarter.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,27 +31,32 @@ import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.IconToggleButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.ModeNight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.breens.mvvmlivescorestarter.R
 import com.breens.mvvmlivescorestarter.data.remote.models.Data
 import com.breens.mvvmlivescorestarter.ui.theme.Green900
 import com.breens.mvvmlivescorestarter.ui.theme.MVVMLiveScoreStarterTheme
+import com.breens.mvvmlivescorestarter.ui.util.imageLoader
 import com.breens.mvvmlivescorestarter.viewmodel.MatchesViewModel
 import com.breens.mvvmlivescorestarter.viewmodel.state.MatchesState
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +75,31 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TopAppBar(matchesViewModel: MatchesViewModel = viewModel()) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = {
+            matchesViewModel.getAllInPlayMatches()
+            matchesViewModel.getUpcomingMatches()
+        }) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh Icon")
+        }
+
+        Text(text = "LiveScores", style = MaterialTheme.typography.h4)
+
+        val (isChecked, setChecked) = remember { mutableStateOf(false) }
+
+        FavoriteButton(
+            isChecked = isChecked,
+            onClick = { setChecked(!isChecked) }
+        )
     }
 }
 
@@ -245,40 +286,61 @@ fun UpcomingMatchItem(match: Data) {
             .padding(bottom = 10.dp),
         elevation = 0.dp
     ) {
-        Column(verticalArrangement = Arrangement.Center) {
-            val homeTeamLogo = match.home_team.logo
-            val awayTeamLogo = match.away_team.logo
+        val homeTeamLogo = imageLoader(url = match.home_team.logo).value
+        val awayTeamLogo = imageLoader(url = match.away_team.logo).value
+        val month = getMatchDayAndMonth(match.match_start)
+        val time = getMatchTime(match.match_start)
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Column(
+                modifier = Modifier.weight(0.5f),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val month = getMatchDayAndMonth(match.match_start)
-                val time = getMatchTime(match.match_start)
+                homeTeamLogo?.let {
+                    Image(
+                        modifier = Modifier.size(30.dp),
+                        bitmap = homeTeamLogo.asImageBitmap(),
+                        contentDescription = "Home Team Logo",
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 Text(
-                    modifier = Modifier.weight(0.5f),
                     text = match.home_team.name,
-                    style = MaterialTheme.typography.h6
-                )
-                Text(
-                    modifier = Modifier.weight(0.5f),
-                    text = "$time\n$month",
                     style = MaterialTheme.typography.h6,
-                    color = Green900,
                     textAlign = TextAlign.Center
                 )
+            }
+
+            Text(
+                modifier = Modifier.weight(0.5f),
+                text = "$time\n$month",
+                style = MaterialTheme.typography.h6,
+                color = Green900,
+                textAlign = TextAlign.Center
+            )
+
+            Column(
+                modifier = Modifier.weight(0.5f),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                awayTeamLogo?.let {
+                    Image(
+                        modifier = Modifier.size(30.dp),
+                        bitmap = awayTeamLogo.asImageBitmap(),
+                        contentDescription = "Away Team Logo",
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 Text(
-                    modifier = Modifier.weight(0.5f),
                     text = match.away_team.name,
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -297,24 +359,46 @@ fun getMatchTime(date: String): String? {
     return date.let { it -> parser.parse(it)?.let { formatter.format(it) } }
 }
 
+@SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
-fun TopAppBar() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+fun FavoriteButton(
+    isChecked: Boolean,
+    onClick: () -> Unit
+) {
+    IconToggleButton(
+        checked = isChecked,
+        onCheckedChange = { onClick() }
     ) {
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh Icon")
+        val transition = updateTransition(isChecked, label = "Checked indicator")
+
+        val tint by transition.animateColor(
+            label = "Tint"
+        ) { isChecked ->
+            if (isChecked) Color.White else Color.Black
         }
 
-        Text(text = "LiveScores", style = MaterialTheme.typography.h4)
+        val size by transition.animateDp(
+            transitionSpec = {
+                if (false isTransitioningTo true) {
+                    keyframes {
+                        durationMillis = 250
+                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms
+                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms
+                        40.dp at 75 // ms
+                        35.dp at 150 // ms
+                    }
+                } else {
+                    spring(stiffness = Spring.StiffnessVeryLow)
+                }
+            },
+            label = "Size"
+        ) { 30.dp }
 
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.modeicon),
-                contentDescription = "Toggle Theme"
-            )
-        }
+        Icon(
+            imageVector = if (isChecked) Icons.Filled.ModeNight else Icons.Filled.LightMode,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(size)
+        )
     }
 }

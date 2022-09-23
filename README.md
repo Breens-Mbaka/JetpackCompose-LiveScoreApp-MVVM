@@ -6,7 +6,7 @@ The `main branch` contains the `Elena API` integration and the `fix/sport-data-a
 ## LiveScoreApp
 An Android App that fetches live and upcoming matches that used to fetch data from ElenaSport API but now SportsData API
 
-## Prerequisite Before Running This App
+### Prerequisite Before Running This App
 Please sign up to [SportsDataApi](https://sportdataapi.com/) and get you API key from your Dashboard then navigate to `util/Constants.kt` and put
 it in the variable;
 
@@ -16,3 +16,6 @@ const val API_KEY = "PUT API KEY HERE"
 
 ### ScreenShots
 <img src="screenshots/screenshot.png" width="260">
+
+### Demo
+https://user-images.githubusercontent.com/72180010/191913969-ba6aed12-4a47-4c7a-a826-55b16f2b6aa9.mp4
